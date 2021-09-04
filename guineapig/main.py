@@ -10,6 +10,23 @@ from mysql.connector import errorcode
 def guineapig_print(value):
 	print(f"GUINEAPIG🐹: {value}")
 
+
+def check_tables_exist(cnx, table):
+	cursor = cnx.cursor()
+	cursor.execute("""
+		SELECT COUNT(*)
+        FROM information_schema.tables
+        WHERE table_name = "{}"
+	""".format(table))
+	if cursor.fetchone()[0] == 1:
+		cursor.close()
+		return True
+
+	cursor.close()
+	return False
+
+
+
 @click.group()
 def main():
 	pass
@@ -75,6 +92,9 @@ def setupdb():
 			else:
 				guineapig_print(err.msg)
 
+	cursor.close()
+	cnx.close()
+
 
 
 
@@ -88,7 +108,7 @@ def shell():
 	except mysql.connector.Error as err:
 		if err.errno == errorcode.ER_BAD_DB_ERROR:
 			guineapig_print("Database `guineapig_db` does not exist.")
-			guineapig_print("Please run `guineapig setupdb.`")
+			guineapig_print("Please run `guineapig setupdb`.")
 			sys.exit()
 		elif err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
 			guineapig_print("Could not access to `guineapig_db` as root.")
@@ -101,9 +121,21 @@ def shell():
 		cursor.execute("USE guineapig_db")
 	except mysql.connector.Error as err:
 		guineapig_print("Database `guineapig_db` does not exist.")
-		guineapig_print("Please run `guineapig setupdb.`")
+		guineapig_print("Please run `guineapig setupdb`.")
 		sys.exit()
 
+	# check if tables exist
+	exist1 = check_tables_exist(cnx, "item")
+	exist2 = check_tables_exist(cnx, "category")
+	if exist1 and exist2:
+		pass
+	else:
+		guineapig_print("Tables do not exist.")
+		guineapig_print("Please run `guineapig setupdb`.")
+		sys.exit()
+
+	cursor.close()
+	cnx.close()
 	Prompt().cmdloop()
 
 
