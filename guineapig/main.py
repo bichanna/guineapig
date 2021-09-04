@@ -7,7 +7,7 @@ import sys
 import platform
 
 def guineapig_print(value):
-	print(f"GUINEAPIG: {value}🐹")
+	print(f"GUINEAPIG🐹: {value}")
 
 @click.group()
 def main():
@@ -23,13 +23,13 @@ def setupdb():
 		try:
 			output = subprocess.check_output(["brew", "--version"]).decode("utf-8")
 			# install mysql
-			print("GUINEAPIG: Start installing mysql")
+			guineapig_print("Start installing mysql")
 			output = subprocess.check_output(["brew", "install", "mysql"]).decode("utf-8")
 			if "brew services restart mysql" in output:
 				print("mysql is installed.")
 		except FileNotFoundError:
 			homebrew_url = "https://brew.sh/"
-			print(f"homebrew is not installed. Please install homebrew: {homebrew_url}").decode("utf-8")
+			print(f"homebrew is not installed. Please install homebrew: {homebrew_url}")
 			sys.exit()
 
 	# create database if it does not exit

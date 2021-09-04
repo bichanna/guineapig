@@ -3,7 +3,7 @@ from cmd import Cmd
 
 class Prompt(Cmd):
 	prompt = "guineapig>> "
-	intro = "GUINEAPIG"
+	intro = "GUINEAPIG🐹"
 
 	def do_exit(self, inp):
 		print("Bye")
