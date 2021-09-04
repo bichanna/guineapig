@@ -71,7 +71,7 @@ def setupdb():
 	TABLES["item"] = ("""
 		CREATE TABLE item (
 			item_id INTEGER,
-			item_value FLOAT(5, 2), # 999.99
+			item_value DECIMAL(5, 2), # 999.99
 			category_id CHAR(100),
 			FOREIGN KEY (category_id)
 				REFERENCES category(category_id),
