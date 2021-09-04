@@ -4,6 +4,7 @@ import subprocess
 import mysql.connector
 from mysql.connector.errors import DatabaseError
 import sys
+import platform
 
 @click.group()
 def main():
@@ -46,7 +47,11 @@ def shell():
 
 
 if __name__ == "__main__":
+	if platform.system() != "Darwin":
+		print("guineapig is currently only for Mac users.")
+		sys.exit()
 	main()
+
 
 
 
