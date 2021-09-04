@@ -1,5 +1,5 @@
 import click
-from .prompt import Prompt
+from prompt import Prompt
 import subprocess
 import mysql.connector
 from mysql.connector.errors import DatabaseError
@@ -34,8 +34,8 @@ def setupdb():
 			sys.exit()
 
 	# create database if it does not exit
-	db = mysql.connector.connect(user="root")
-	cursor = db.cursor()
+	cnx = mysql.connector.connect(user="root")
+	cursor = cnx.cursor()
 	try:
 		cursor.execute("CREATE DATABASE guineapig_db")
 		guineapig_print("Database `guineapig_db` is created.")
@@ -47,26 +47,30 @@ def setupdb():
 @main.command()
 def shell():
 	# connect to the database if it can be connected
+	cnx = None
 	try:
 		cnx = mysql.connector.connect(user="root",database="guineapig_db")
-		Prompt().cmdloop()
 	except mysql.connector.Error as err:
 		if err.errno == errorcode.ER_BAD_DB_ERROR:
 			guineapig_print("Database `guineapig_db` does not exist.")
 			guineapig_print("Please run `guineapig setupdb.`")
 			sys.exit()
+		elif err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+			guineapig_print("Could not access to `guineapig_db` as root.")
+			sys.exit()
+
+	cursor = cnx.cursor()
 
 	# use guineapig_db
 	try:
 		cursor.execute("USE guineapig_db")
 	except mysql.connector.Error as err:
-		if err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
-			guineapig_print("Could not access to `guineapig_db` as root.")
-		else:
-			guineapig_print("Database `guineapig_db` does not exist.")
-			guineapig_print("Please run `guineapig setupdb.`")
+		guineapig_print("Database `guineapig_db` does not exist.")
+		guineapig_print("Please run `guineapig setupdb.`")
 		sys.exit()
-		
+
+	Prompt().cmdloop()
+
 
 
 
