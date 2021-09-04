@@ -33,7 +33,7 @@ def setupdb():
 			print(f"homebrew is not installed. Please install homebrew: {homebrew_url}")
 			sys.exit()
 
-	# create database if it does not exit
+	# create database if it does not exist
 	cnx = mysql.connector.connect(user="root")
 	cursor = cnx.cursor()
 	try:
@@ -41,6 +41,41 @@ def setupdb():
 		guineapig_print("Database `guineapig_db` is created.")
 	except DatabaseError:
 		guineapig_print("Database `guineapig_db` already exists.")
+
+	# create tables in guineapig_db
+	TABLES = {}
+	TABLES["category"] = ("""
+		CREATE TABLE category (
+			category_id CHAR(100),
+			category_name VARCHAR(120) NOT NULL,
+			PRIMARY KEY (category_id)
+		)
+	""")
+	TABLES["item"] = ("""
+		CREATE TABLE item (
+			item_id INTEGER,
+			item_value FLOAT(5, 2), # 999.99
+			category_id CHAR(100),
+			FOREIGN KEY (category_id)
+				REFERENCES category(category_id),
+			PRIMARY KEY (item_id)
+		)
+	""")
+
+	cursor.execute("USE guineapig_db")
+
+	for table in TABLES:
+		sql = TABLES[table]
+		try: 
+			cursor.execute(sql)
+			guineapig_print(f"Table '{table}' is created.")
+		except mysql.connector.Error as err:
+			if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+				guineapig_print(f"Table '{table}' exists.")
+			else:
+				guineapig_print(err.msg)
+
+
 
 
 
