@@ -6,6 +6,9 @@ from mysql.connector.errors import DatabaseError
 import sys
 import platform
 
+def guineapig_print(value):
+	print(f"GUINEAPIG: {value}🐹")
+
 @click.group()
 def main():
 	pass
@@ -34,9 +37,9 @@ def setupdb():
 	cursor = db.cursor()
 	try:
 		cursor.execute("CREATE DATABASE guineapig_db")
-		print("GUINEAPIG: Database `guineapig_db` is created.")
+		guineapig_print("Database `guineapig_db` is created.")
 	except DatabaseError:
-		print("GUINEAPIG: Database `guineapig_db` already exits.")
+		guineapig_print("Database `guineapig_db` already exits.")
 
 
 
