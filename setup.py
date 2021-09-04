@@ -37,5 +37,9 @@ setup(
         classifiers= [
             "Environment :: Console",
             "Development Status :: 2 - Pre-Alpha",
-        ]
+        ],
+        entry_points = """
+            [console_scripts]
+            guineapig=guineapig.main:main
+        """
 )
