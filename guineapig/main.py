@@ -63,16 +63,16 @@ def setupdb():
 	TABLES = {}
 	TABLES["category"] = ("""
 		CREATE TABLE category (
-			category_id CHAR(100),
+			category_id INTEGER NOT NULL AUTO_INCREMENT,
 			category_name VARCHAR(120) NOT NULL,
 			PRIMARY KEY (category_id)
 		)
 	""")
 	TABLES["item"] = ("""
 		CREATE TABLE item (
-			item_id INTEGER,
+			item_id INTEGER NOT NULL AUTO_INCREMENT,
 			item_value DECIMAL(5, 2), # 999.99
-			category_id CHAR(100),
+			category_id INTEGER,
 			FOREIGN KEY (category_id)
 				REFERENCES category(category_id),
 			PRIMARY KEY (item_id)
