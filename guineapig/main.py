@@ -5,7 +5,12 @@ from mysql.connector.errors import DatabaseError
 import sys
 import platform
 from mysql.connector import errorcode
-
+try:
+	import utils
+	import prompt
+except ModuleNotFoundError:
+	from . import utils
+	from . import prompt
 
 
 
@@ -15,7 +20,6 @@ def main():
 
 @main.command()
 def setupdb():
-	from . import utils
 	# check if mysql is installed
 	try:
 		output = subprocess.check_output(["mysql", "--version"]).decode("utf-8")
@@ -85,7 +89,6 @@ def setupdb():
 
 @main.command()
 def shell():
-	from . import utils
 	# connect to the database if it can be connected
 	cnx = None
 	try:
@@ -121,7 +124,6 @@ def shell():
 
 	cursor.close()
 	cnx.close()
-	from . import prompt
 	prompt.Prompt().cmdloop()
 
 
@@ -130,7 +132,6 @@ def shell():
 
 if __name__ == "__main__":
 	if platform.system() != "Darwin":
-		from . import utils
 		utils.guineapig_print("guineapig is currently only for Mac users.")
 		sys.exit()
 	main()
