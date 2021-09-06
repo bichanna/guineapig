@@ -40,7 +40,7 @@ class Prompt(Cmd):
 		cursor = cnx.cursor()
 		with cnx:
 			if inp == "category":
-				category_name = input("   category name: ")
+				category_name = input("category name: ")
 				try:
 					command = "INSERT INTO category (category_name) VALUES ('{}')".format(category_name)
 					cursor.execute(command)
@@ -50,15 +50,36 @@ class Prompt(Cmd):
 				cursor.close()
 
 			elif inp == "item":
+				cursor.execute(f"SELECT * FROM category")
+				result = cursor.fetchall()
 				try:
-					value = float(input("   item value: "))
-					memo = input("   memo(optional): ")
-					try:
-						cursor.execute(f"INSERT INTO item (item_value, memo) VALUES ('{value}', '{memo}')")
-						cursor.execute(command)
-						cnx.commit()
-					except:
-						utils.guineapig_print("Error occured. Please try again.")
+					value = float(input("item value: "))
+					memo = input("memo(optional): ")
+					while True:
+						category_name = input("category: ")
+						if category_name == "abort":
+							break
+						cursor.execute(f"SELECT category_id FROM category WHERE category_name='{category_name}'")
+						result = cursor.fetchall()
+						if len(result) == 1:
+							category_id = result[0][0]
+							try:
+								cursor.execute(f"INSERT INTO item (item_value, memo, category_id) VALUES ({value}, '{memo}', {category_id})")
+								cnx.commit()
+								utils.guineapig_print(f"Saved!")
+								break
+							except:
+								utils.guineapig_print("Error occured. Please try again.")
+						else:
+							cursor.execute("SELECT * FROM category")
+							result = cursor.fetchall()
+							if len(result) >= 1:
+								print("Categories you can choose from")
+								for i in result:
+									print(f" - {i[1]}")
+							else:
+								utils.guineapig_print("There is no category. Create one with 'create category'.")
+								break
 				except ValueError:
 					utils.guineapig_print("Invalid input")
 			else:
