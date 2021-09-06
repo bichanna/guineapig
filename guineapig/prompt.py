@@ -41,18 +41,26 @@ class Prompt(Cmd):
 		with cnx:
 			if inp == "category":
 				category_name = input("   category name: ")
-				command = "INSERT INTO category (category_name) VALUES ('{}')".format(category_name)
-				cursor.execute(command)
-				print(command)
-				print(cursor.fetchall())
+				try:
+					command = "INSERT INTO category (category_name) VALUES ('{}')".format(category_name)
+					cursor.execute(command)
+					cnx.commit()
+				except:
+					utils.guineapig_print("Error occured. Please try again.")
 				cursor.close()
 
 			elif inp == "item":
-				value = float(input("   item value: "))
-				memo = input("   memo(optional): ")
-				# try:
-				cursor.execute(f"INSERT INTO item (item_value, memo) VALUES ('{value}', '{memo}')")
-				# except:
+				try:
+					value = float(input("   item value: "))
+					memo = input("   memo(optional): ")
+					try:
+						cursor.execute(f"INSERT INTO item (item_value, memo) VALUES ('{value}', '{memo}')")
+						cursor.execute(command)
+						cnx.commit()
+					except:
+						utils.guineapig_print("Error occured. Please try again.")
+				except ValueError:
+					utils.guineapig_print("Invalid input")
 			else:
 				utils.guineapig_print("Invalid command. 'create category' or 'create item'")
 
