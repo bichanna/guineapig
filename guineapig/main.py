@@ -61,6 +61,7 @@ def setupdb():
 			item_value DECIMAL(5, 2), # 999.99
 			category_id INTEGER NOT NULL,
 			memo TEXT,
+			date_added TIMESTAMP DEFAULT CURRENT_TIMESTAMP, 
 			FOREIGN KEY (category_id)
 				REFERENCES category(category_id),
 			PRIMARY KEY (item_id)
