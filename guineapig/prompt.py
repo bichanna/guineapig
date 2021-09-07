@@ -6,6 +6,13 @@ except:
 	from . import utils
 
 
+list_print = """ - ${}
+ - MEMO: {}
+ - DATE: {}
+"""
+
+
+
 class Prompt(Cmd):
 	prompt = "guineapig>> "
 	intro = "GUINEAPIG🐹"
@@ -32,7 +39,7 @@ class Prompt(Cmd):
 				print("items")
 				for row in result:
 					category_id = row[2]
-					print(f" - {row[1]} memo: {row[3] or 'None'}")
+					print(list_print.format(row[1], row[3], row[4]))
 			cursor.close()
 
 
