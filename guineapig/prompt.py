@@ -28,9 +28,11 @@ class Prompt(Cmd):
 			result = cursor.fetchall()
 			if len(result) == 0:
 				print("There are no items. Create one with 'create item'")
-			for row in result:
-				print(row)
-				print("\n")
+			else:
+				print("items")
+				for row in result:
+					category_id = row[2]
+					print(f" - {row[1]} memo: {row[3] or 'None'}")
 			cursor.close()
 
 
