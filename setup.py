@@ -1,6 +1,6 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.0.2' 
+VERSION = '0.1.0' 
 DESCRIPTION = 'CLI for tracking pocket money'
 LONG_DESCRIPTION = """
 **DEVELOPMENT IN PROGRESS**
@@ -36,7 +36,7 @@ setup(
         keywords=["guineapig", "python"],
         classifiers= [
             "Environment :: Console",
-            "Development Status :: 2 - Pre-Alpha",
+            "Development Status :: 4 - Beta",
         ],
         entry_points = """
             [console_scripts]
