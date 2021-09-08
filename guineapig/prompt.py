@@ -15,6 +15,13 @@ ID : {}
  -----------------
 """
 
+def list_items(item_list):
+	for row in item_list:
+		id = row[0]
+		month = row[4].strftime("%B")
+		date = f"{month} {row[4].day}, {row[4].year}"
+		print(list_print.format(id, date, row[1], row[3]))
+
 
 
 class Prompt(Cmd):
@@ -61,12 +68,8 @@ class Prompt(Cmd):
 						if year <= current_year and year >= oldest_year:
 							cursor.execute(f"SELECT * FROM item WHERE MONTH(date_added)={month} AND YEAR(date_added)={year}")
 							result = cursor.fetchall()
-							if len(result):
-								for row in result:
-									id = row[0]
-									month = row[4].strftime("%B")
-									date = f"{month} {row[4].day}, {row[4].year}"
-									print(list_print.format(id, date, row[1], row[3]))
+							if len(result) >= 1:
+								list_items(result)
 							else:
 								utils.guineapig_print("No items found.")
 						else:
@@ -90,9 +93,7 @@ class Prompt(Cmd):
 			if len(result) == 0:
 				print("There are no items. Create one with 'create item'")
 			else:
-				for row in result:
-					category_id = row[2]
-					print(list_print.format(category_id, row[4], row[1], row[3]))
+				list_items(result)
 			cursor.close()
 
 
