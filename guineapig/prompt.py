@@ -46,6 +46,7 @@ class Prompt(Cmd):
 			value = int(inputs[-1])
 		except:
 			utils.guineapig_print("Invalid command")
+			return
 
 		if len(inputs) >= 2:
 			today = datetime.datetime.today()
@@ -85,7 +86,7 @@ class Prompt(Cmd):
 						year = int(inputs[-1])
 					except:
 						utils.guineapig_print("Invalid command")
-						# stop
+						return
 					current_year = today.year
 					cursor.execute("SELECT MAX(item_id) FROM item")
 					result = cursor.fetchall()
@@ -132,6 +133,7 @@ class Prompt(Cmd):
 					cnx.commit()
 				except:
 					utils.guineapig_print("Error occured. Please try again.")
+					return
 				cursor.close()
 
 			elif inp == "item":
