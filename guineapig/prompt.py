@@ -140,7 +140,7 @@ class Prompt(Cmd):
 				cursor.execute(f"SELECT * FROM category")
 				result = cursor.fetchall()
 				try:
-					value = float(input("item value: "))
+					value = float(input("amount of money: "))
 					memo = input("memo(optional): ")
 					while True:
 						category_name = input("category: ")
