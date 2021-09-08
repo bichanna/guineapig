@@ -1,6 +1,7 @@
 from cmd import Cmd
 import mysql.connector
 import datetime
+import sys
 try:
 	import utils
 except:
@@ -42,16 +43,17 @@ class Prompt(Cmd):
 		"""List items created in particular month or year"""
 		inputs = inp.split(" ")
 		try:
-			value1 = int(inputs[-1])
+			value = int(inputs[-1])
 		except:
-			utils.guineapig_print("Invalid input")
+			utils.guineapig_print("Invalid command")
 
 		if len(inputs) >= 2:
 			today = datetime.datetime.today()
 			connection, cursor = utils.connect_db()
 			with connection:
+				# MONTH
 				if inputs[0] == "month":
-					month = value1
+					month = value
 					try:
 						year = int(inputs[-2])
 					except:
@@ -77,10 +79,31 @@ class Prompt(Cmd):
 					else:
 						utils.guineapig_print("1 ~ 12")
 
+				elif inputs[0] == "year":
+					year = 0
+					try:
+						year = int(inputs[-1])
+					except:
+						utils.guineapig_print("Invalid command")
+						# stop
+					current_year = today.year
+					cursor.execute("SELECT MAX(item_id) FROM item")
+					result = cursor.fetchall()
+					item_id = result[0][0]
+					cursor.execute(f"SELECT * FROM item WHERE item_id = {item_id}")
+					result = cursor.fetchall()
+					oldest_year = result[0][4].year
+					if year <= current_year and year >= oldest_year:
+						cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year}")
+						result = cursor.fetchall()
+						list_items(result)
+					else:
+						utils.guineapig_print(f"{oldest_year} ~ {current_year}")
+
 			cursor.close()
 
 		else:
-			utils.guineapig_print("Either 'show month <month>', or 'show year <year>'.")
+			utils.guineapig_print("Either 'show month <year> <month>', or 'show year <year>'.")
 			
 
 	
