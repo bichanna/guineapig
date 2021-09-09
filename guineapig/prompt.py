@@ -30,7 +30,7 @@ class Prompt(Cmd):
 		try:
 			value = int(inputs[-1])
 		except:
-			utils.guineapig_print("Invalid command")
+			utils.guineapig_print("Either\n'show day <year> <month> <day>',\n'show month <year> <month>',\n or 'show year <year>'")
 			return
 
 		if len(inputs) >= 2:
@@ -122,10 +122,24 @@ class Prompt(Cmd):
 			cursor.close()
 
 		else:
-			utils.guineapig_print("Either 'show month <year> <month>', or 'show year <year>'.")
+			utils.guineapig_print("Either\n'show day <year> <month> <day>',\n'show month <year> <month>',\n or 'show year <year>'")
 			
 
+	def do_id(self, inp):
+		connection, cursor = utils.connect_db()
+
+		try:
+			id = int(inp)
+		except:
+			utils.guineapig_print("Please provide id of item.")
+			return
+		with connection:
+			cursor.execute("SELECT * FROM item WHERE item_id={}".format(id))
+			result = cursor.fetchall()
+			utils.list_items(result)
+
 	
+
 	def do_listall(self, inp):
 		"""Show all items stored in database"""
 		connection, cursor = utils.connect_db()
