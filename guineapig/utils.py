@@ -1,5 +1,13 @@
 import mysql.connector
 
+list_print = """
+ID : {}
+ - DATE: {}
+ - AMOUNT: ${}
+ - MEMO: {}
+ -----------------
+"""
+
 
 def guineapig_print(value):
 	print(f"GUINEAPIG🐹: {value}")
@@ -24,3 +32,11 @@ def connect_db():
 	cnx = mysql.connector.connect(user="root", database="guineapig_db")
 	cursor = cnx.cursor()
 	return cnx, cursor
+
+
+def list_items(item_list):
+	for row in item_list:
+		id = row[0]
+		month = row[4].strftime("%B")
+		date = f"{month} {row[4].day}, {row[4].year}"
+		print(list_print.format(id, date, row[1], row[3]))

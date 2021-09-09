@@ -8,21 +8,6 @@ except:
 	from . import utils
 
 
-list_print = """
-ID : {}
- - DATE: {}
- - ${}
- - MEMO: {}
- -----------------
-"""
-
-def list_items(item_list):
-	for row in item_list:
-		id = row[0]
-		month = row[4].strftime("%B")
-		date = f"{month} {row[4].day}, {row[4].year}"
-		print(list_print.format(id, date, row[1], row[3]))
-
 
 
 class Prompt(Cmd):
@@ -72,7 +57,7 @@ class Prompt(Cmd):
 							cursor.execute(f"SELECT * FROM item WHERE MONTH(date_added)={month} AND YEAR(date_added)={year}")
 							result = cursor.fetchall()
 							if len(result) >= 1:
-								list_items(result)
+								utils.list_items(result)
 							else:
 								utils.guineapig_print("No items found.")
 						else:
@@ -97,7 +82,7 @@ class Prompt(Cmd):
 					if year <= current_year and year >= oldest_year:
 						cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year}")
 						result = cursor.fetchall()
-						list_items(result)
+						utils.list_items(result)
 					else:
 						utils.guineapig_print(f"{oldest_year} ~ {current_year}")
 
@@ -117,7 +102,7 @@ class Prompt(Cmd):
 			if len(result) == 0:
 				print("There are no items. Create one with 'create item'")
 			else:
-				list_items(result)
+				utils.list_items(result)
 			cursor.close()
 
 
