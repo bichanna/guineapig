@@ -65,6 +65,7 @@ class Prompt(Cmd):
 					else:
 						utils.guineapig_print("1 ~ 12")
 
+				# YEAR
 				elif inputs[0] == "year":
 					year = 0
 					try:
@@ -85,6 +86,38 @@ class Prompt(Cmd):
 						utils.list_items(result)
 					else:
 						utils.guineapig_print(f"{oldest_year} ~ {current_year}")
+
+				# DAY
+				elif inputs[0] == "day":
+					try:
+						day = int(inputs[-1])
+						month = int(inputs[-2])
+						year = int(inputs[-3])
+					except:
+						utils.guineapig_print("Invalid command")
+						return
+					if day >= 1 and day <= 31:
+						if month >= 1 and month <= 12:
+							current_year = today.year
+							cursor.execute("SELECT MAX(item_id) FROM item")
+							result = cursor.fetchall()
+							item_id = result[0][0]
+							cursor.execute(f"SELECT * FROM item WHERE item_id = {item_id}")
+							result = cursor.fetchall()
+							oldest_year = result[0][4].year
+							if year <= current_year and year >= oldest_year:
+								cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year} AND MONTH(date_added)={month} AND DAY(date_added)={day}")
+								result = cursor.fetchall()
+								if len(result) >= 1:
+									utils.list_items(result)
+								else:
+									utils.guineapig_print("No items found.")
+							else:
+								utils.guineapig_print(f"{oldest_year} ~ {current_year}")
+						else:
+							utils.guineapig_print("1 ~ 12")
+					else:
+						utils.guineapig_print("1 ~ 31")
 
 			cursor.close()
 
