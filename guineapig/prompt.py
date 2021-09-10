@@ -1,6 +1,7 @@
 from cmd import Cmd
 import mysql.connector
 import datetime
+import subprocess
 import sys
 try:
 	import utils
@@ -23,6 +24,11 @@ class Prompt(Cmd):
 	do_EOF = do_exit
 
 	do_quit = do_exit
+
+	def do_clear(self, inp):
+		"""Clear"""
+		subprocess.run(["clear"])
+
 
 	def do_modify(self, inp):
 		"""Modify data, specified by ID"""
@@ -168,17 +174,21 @@ class Prompt(Cmd):
 			
 
 	def do_id(self, inp):
+		"""Display the data corresponding to ID\n'id <some id>'"""
 		connection, cursor = utils.connect_db()
 
 		try:
 			id = int(inp)
 		except:
-			utils.guineapig_print("Please provide id of item.")
+			utils.guineapig_print("Please provide ID.")
 			return
 		with connection:
 			cursor.execute("SELECT * FROM item WHERE item_id={}".format(id))
 			result = cursor.fetchall()
-			utils.list_items(result)
+			if len(result) == 1:
+				utils.list_items(result)
+			else:
+				utils.guineapig_print("Not found.")
 
 
 	def do_create(self, inp):
