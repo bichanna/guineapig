@@ -24,8 +24,46 @@ class Prompt(Cmd):
 
 	do_quit = do_exit
 
+	def do_modify(self, inp):
+		"""Modify data, specified by ID"""
+		try:
+			id = int(inp)
+		except:
+			utils.guineapig_print("Invalid input")
+			return
+		connection, cursor = utils.connect_db()
+		with connection:
+			cursor.execute("SELECT * FROM item WHERE item_id={}".format(id))
+			result = cursor.fetchall()
+			if len(result) == 1:
+				id = result[0][0]
+				value = result[0][1]
+				category_id = result[0][2]
+				memo = result[0][3]
+				print("Just press enter if you do not want to change")
+				while True:
+					new_value = input("Amount(${}): ".format(value))
+					if new_value == "":
+						new_value = value
+					try:
+						float(new_value)
+						break
+					except:
+						pass
+				
+				new_memo = input(f"Memo \n{memo}\n: ")
+				if new_memo == "":
+					new_memo = memo
+
+				cursor.execute("UPDATE item SET item_value={}, memo='{}' WHERE item_id={}".format(new_value, new_memo, id))
+				connection.commit()
+
+			elif len(result) == 0:
+				utils.guineapig_print("Invalid ID {id}".format)
+
+
 	def do_show(self, inp):
-		"""List items created in particular month or year"""
+		"""List items created in particular day, month, or year\n'show day <year> <month> <day>'\n'show month <year> <month>'\n'show year <year>'"""
 		inputs = inp.split(" ")
 		try:
 			value = int(inputs[-1])
