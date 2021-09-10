@@ -1,4 +1,5 @@
 import mysql.connector
+import subprocess
 
 list_print = """
 ID : {}
@@ -35,8 +36,13 @@ def connect_db():
 
 
 def list_items(item_list):
+	long_list = ""
 	for row in item_list:
 		id = row[0]
 		month = row[4].strftime("%B")
 		date = f"{month} {row[4].day}, {row[4].year}"
-		print(list_print.format(id, date, row[1], row[3]))
+		long_list += f"{list_print.format(id, date, row[1], row[3])}\n"
+
+	subprocess.run(['echo "'+long_list+'" | more'], shell=True)
+
+
