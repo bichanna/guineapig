@@ -90,7 +90,7 @@ class Prompt(Cmd):
 					result = cursor.fetchall()
 					oldest_year = result[0][4].year
 					if year <= current_year and year >= oldest_year:
-						cursor.execute(f"SELECT * FROM item WHERE MONTH(date_added)={month} AND YEAR(date_added)={year}")
+						cursor.execute(f"SELECT * FROM item WHERE MONTH(date_added)={month} AND YEAR(date_added)={year} ORDER BY item_id DESC")
 						result = cursor.fetchall()
 						if len(result) >= 1:
 							utils.list_items(result)
@@ -113,11 +113,11 @@ class Prompt(Cmd):
 				cursor.execute("SELECT MAX(item_id) FROM item")
 				result = cursor.fetchall()
 				item_id = result[0][0]
-				cursor.execute(f"SELECT * FROM item WHERE item_id = {item_id}")
+				cursor.execute(f"SELECT * FROM item WHERE item_id = {item_id} ORDER BY item_id DESC")
 				result = cursor.fetchall()
 				oldest_year = result[0][4].year
 				if year <= current_year and year >= oldest_year:
-					cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year}")
+					cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year} ORDER BY item_id DESC")
 					result = cursor.fetchall()
 					utils.list_items(result)
 				else:
@@ -142,7 +142,7 @@ class Prompt(Cmd):
 						result = cursor.fetchall()
 						oldest_year = result[0][4].year
 						if year <= current_year and year >= oldest_year:
-							cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year} AND MONTH(date_added)={month} AND DAY(date_added)={day}")
+							cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year} AND MONTH(date_added)={month} AND DAY(date_added)={day} ORDER BY item_id DESC")
 							result = cursor.fetchall()
 							if len(result) >= 1:
 								utils.list_items(result)
@@ -156,7 +156,7 @@ class Prompt(Cmd):
 					utils.guineapig_print("1 ~ 31")
 			# ALL
 			elif inputs[0] == "all":
-				cursor.execute("SELECT * FROM item")
+				cursor.execute("SELECT * FROM item ORDER BY item_id DESC")
 				result = cursor.fetchall()
 				if len(result) == 0:
 					print("There are no items. Create one with 'create item'")
