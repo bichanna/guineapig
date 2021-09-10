@@ -51,7 +51,7 @@ class Prompt(Cmd):
 					except:
 						pass
 				
-				new_memo = input(f"Memo \n{memo}\n: ")
+				new_memo = input(f"Current memo↓\n{memo}\n: ")
 				if new_memo == "":
 					new_memo = memo
 
@@ -62,27 +62,77 @@ class Prompt(Cmd):
 				utils.guineapig_print("Invalid ID {id}".format)
 
 
-	def do_show(self, inp):
-		"""List items created in particular day, month, or year\n'show day <year> <month> <day>'\n'show month <year> <month>'\n'show year <year>'"""
-		inputs = inp.split(" ")
-		try:
-			value = int(inputs[-1])
-		except:
-			utils.guineapig_print("Either\n'show day <year> <month> <day>',\n'show month <year> <month>',\n or 'show year <year>'")
-			return
+	def do_list(self, inp):
+		"""List items created in particular day, month, or year\n'list day <year> <month> <day>'\n'list month <year> <month>'\n'list year <year>'\n'list all'"""
 
-		if len(inputs) >= 2:
+		connection, cursor = utils.connect_db()
+		with connection:
 			today = datetime.datetime.today()
-			connection, cursor = utils.connect_db()
-			with connection:
-				# MONTH
-				if inputs[0] == "month":
-					month = value
-					try:
-						year = int(inputs[-2])
-					except:
-						utils.guineapig_print("Invalid input")
+			inputs = inp.split(" ")
+			# MONTH
+			if inputs[0] == "month":
+				try:
+					month = int(inputs[-1])
+				except:
+					utils.guineapig_print("Either\n'list day <year> <month> <day>',\n'list month <year> <month>',\n'list year <year>'\n'list all'")
+					return
+				try:
+					year = int(inputs[-2])
+				except:
+					utils.guineapig_print("Invalid input")
 
+				if month >= 1 and month <= 12:
+					current_year = today.year
+					cursor.execute("SELECT MAX(item_id) FROM item")
+					result = cursor.fetchall()
+					item_id = result[0][0]
+					cursor.execute(f"SELECT * FROM item WHERE item_id = {item_id}")
+					result = cursor.fetchall()
+					oldest_year = result[0][4].year
+					if year <= current_year and year >= oldest_year:
+						cursor.execute(f"SELECT * FROM item WHERE MONTH(date_added)={month} AND YEAR(date_added)={year}")
+						result = cursor.fetchall()
+						if len(result) >= 1:
+							utils.list_items(result)
+						else:
+							utils.guineapig_print("No items found.")
+					else:
+						utils.guineapig_print(f"{oldest_year} ~ {current_year}")
+				else:
+					utils.guineapig_print("1 ~ 12")
+
+			# YEAR
+			elif inputs[0] == "year":
+				year = 0
+				try:
+					year = int(inputs[-1])
+				except:
+					utils.guineapig_print("Invalid command")
+					return
+				current_year = today.year
+				cursor.execute("SELECT MAX(item_id) FROM item")
+				result = cursor.fetchall()
+				item_id = result[0][0]
+				cursor.execute(f"SELECT * FROM item WHERE item_id = {item_id}")
+				result = cursor.fetchall()
+				oldest_year = result[0][4].year
+				if year <= current_year and year >= oldest_year:
+					cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year}")
+					result = cursor.fetchall()
+					utils.list_items(result)
+				else:
+					utils.guineapig_print(f"{oldest_year} ~ {current_year}")
+
+			# DAY
+			elif inputs[0] == "day":
+				try:
+					day = int(inputs[-1])
+					month = int(inputs[-2])
+					year = int(inputs[-3])
+				except:
+					utils.guineapig_print("Invalid command")
+					return
+				if day >= 1 and day <= 31:
 					if month >= 1 and month <= 12:
 						current_year = today.year
 						cursor.execute("SELECT MAX(item_id) FROM item")
@@ -92,7 +142,7 @@ class Prompt(Cmd):
 						result = cursor.fetchall()
 						oldest_year = result[0][4].year
 						if year <= current_year and year >= oldest_year:
-							cursor.execute(f"SELECT * FROM item WHERE MONTH(date_added)={month} AND YEAR(date_added)={year}")
+							cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year} AND MONTH(date_added)={month} AND DAY(date_added)={day}")
 							result = cursor.fetchall()
 							if len(result) >= 1:
 								utils.list_items(result)
@@ -102,65 +152,19 @@ class Prompt(Cmd):
 							utils.guineapig_print(f"{oldest_year} ~ {current_year}")
 					else:
 						utils.guineapig_print("1 ~ 12")
+				else:
+					utils.guineapig_print("1 ~ 31")
+			# ALL
+			elif inputs[0] == "all":
+				cursor.execute("SELECT * FROM item")
+				result = cursor.fetchall()
+				if len(result) == 0:
+					print("There are no items. Create one with 'create item'")
+				else:
+					utils.list_items(result)
 
-				# YEAR
-				elif inputs[0] == "year":
-					year = 0
-					try:
-						year = int(inputs[-1])
-					except:
-						utils.guineapig_print("Invalid command")
-						return
-					current_year = today.year
-					cursor.execute("SELECT MAX(item_id) FROM item")
-					result = cursor.fetchall()
-					item_id = result[0][0]
-					cursor.execute(f"SELECT * FROM item WHERE item_id = {item_id}")
-					result = cursor.fetchall()
-					oldest_year = result[0][4].year
-					if year <= current_year and year >= oldest_year:
-						cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year}")
-						result = cursor.fetchall()
-						utils.list_items(result)
-					else:
-						utils.guineapig_print(f"{oldest_year} ~ {current_year}")
+		cursor.close()
 
-				# DAY
-				elif inputs[0] == "day":
-					try:
-						day = int(inputs[-1])
-						month = int(inputs[-2])
-						year = int(inputs[-3])
-					except:
-						utils.guineapig_print("Invalid command")
-						return
-					if day >= 1 and day <= 31:
-						if month >= 1 and month <= 12:
-							current_year = today.year
-							cursor.execute("SELECT MAX(item_id) FROM item")
-							result = cursor.fetchall()
-							item_id = result[0][0]
-							cursor.execute(f"SELECT * FROM item WHERE item_id = {item_id}")
-							result = cursor.fetchall()
-							oldest_year = result[0][4].year
-							if year <= current_year and year >= oldest_year:
-								cursor.execute(f"SELECT * FROM item WHERE YEAR(date_added)={year} AND MONTH(date_added)={month} AND DAY(date_added)={day}")
-								result = cursor.fetchall()
-								if len(result) >= 1:
-									utils.list_items(result)
-								else:
-									utils.guineapig_print("No items found.")
-							else:
-								utils.guineapig_print(f"{oldest_year} ~ {current_year}")
-						else:
-							utils.guineapig_print("1 ~ 12")
-					else:
-						utils.guineapig_print("1 ~ 31")
-
-			cursor.close()
-
-		else:
-			utils.guineapig_print("Either\n'show day <year> <month> <day>',\n'show month <year> <month>',\n or 'show year <year>'")
 			
 
 	def do_id(self, inp):
@@ -175,20 +179,6 @@ class Prompt(Cmd):
 			cursor.execute("SELECT * FROM item WHERE item_id={}".format(id))
 			result = cursor.fetchall()
 			utils.list_items(result)
-
-	
-
-	def do_listall(self, inp):
-		"""Show all items stored in database"""
-		connection, cursor = utils.connect_db()
-		with connection:
-			cursor.execute("SELECT * FROM item")
-			result = cursor.fetchall()
-			if len(result) == 0:
-				print("There are no items. Create one with 'create item'")
-			else:
-				utils.list_items(result)
-			cursor.close()
 
 
 	def do_create(self, inp):
