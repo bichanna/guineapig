@@ -15,6 +15,7 @@ except ModuleNotFoundError:
 
 
 @click.group()
+@click.version_option("0.2.0")
 def main():
 	pass
 
