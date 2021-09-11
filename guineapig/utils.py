@@ -4,7 +4,7 @@ import subprocess
 list_print = """
 ID : {}
  - DATE: {}
- - AMOUNT: ${}
+ - AMOUNT: \${}
  - MEMO: {}
  -----------------
 """
@@ -41,7 +41,8 @@ def list_items(item_list):
 		id = row[0]
 		month = row[4].strftime("%B")
 		date = f"{month} {row[4].day}, {row[4].year}"
-		long_list += f"{list_print.format(id, date, row[1], row[3])}\n"
+		long_list += f"{list_print.format(id, date, float(row[1]), row[3])}\n"
+	# print(long_list)
 
 	subprocess.run(['echo "'+long_list+'" | more'], shell=True)
 
