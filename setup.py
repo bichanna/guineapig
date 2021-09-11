@@ -1,9 +1,9 @@
 from setuptools import setup, find_packages
 
-VERSION = '0.2.0' 
+VERSION = '0.3.0' 
 DESCRIPTION = 'CLI for tracking pocket money'
 LONG_DESCRIPTION = """
-Usage↓
+Usage
 https://github.com/bichanna/guineapig
 """
 
