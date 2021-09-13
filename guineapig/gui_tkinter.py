@@ -12,19 +12,21 @@ class Table:
 		total_rows = len(result)
 		total_columns = len(result[0])
 		for i in range(total_rows):
-
 			for j in range(total_columns):    
-				self.entry = Entry(root, width=40, fg='white')
-				self.entry.grid(row=i+1, column=j)
+				self.text = Text(root, width=15, fg='white', height=3)
+				self.text.grid(row=i, column=j+10)
 				if result[i][j] is not None:
-					self.entry.insert(END, result[i][j])
+					self.text.insert(END, result[i][j])
 				else:
-					self.entry.insert(END, "None")
+					self.text.insert(END, "None")
+				self.text.configure(state="disabled")
 
 def get_all():
 	connection, cursor = utils.connect_db()
 	with connection:
 		root = Tk()
+		root.title("guineapig GUI")
+		root.geometry("650x650")
 		cursor.execute("SELECT * FROM item ORDER BY item_id DESC")
 		result = cursor.fetchall()
 		if len(result) == 0:
