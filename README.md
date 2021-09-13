@@ -1,6 +1,6 @@
 # guineapig
 
-guineapig is a simple CLI for tracking pocket money.
+guineapig is a simple CLI for tracking pocket money. (I'm adding GUI as well!)
 
 ## Installation
 
