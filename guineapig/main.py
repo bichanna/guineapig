@@ -8,9 +8,11 @@ from mysql.connector import errorcode
 try:
 	import utils
 	import prompt
+	import gui_tkinter
 except ModuleNotFoundError:
 	from . import utils
 	from . import prompt
+	from . import gui_tkinter
 
 
 
@@ -128,6 +130,43 @@ def shell():
 	cnx.close()
 	prompt.Prompt().cmdloop()
 
+@main.command()
+def gui():
+	try:
+		cnx = mysql.connector.connect(user="root",database="guineapig_db")
+	except mysql.connector.Error as err:
+		if err.errno == errorcode.ER_BAD_DB_ERROR:
+			utils.guineapig_print("Database `guineapig_db` does not exist.")
+			utils.guineapig_print("Please run `guineapig setupdb`.")
+			sys.exit()
+		elif err.errno == errorcode.ER_ACCESS_DENIED_ERROR:
+			utils.guineapig_print("Could not access to `guineapig_db` as root.")
+			sys.exit()
+
+	cursor = cnx.cursor()
+
+	# use guineapig_db
+	try:
+		cursor.execute("USE guineapig_db")
+	except mysql.connector.Error as err:
+		utils.guineapig_print("Database `guineapig_db` does not exist.")
+		utils.guineapig_print("Please run `guineapig setupdb`.")
+		sys.exit()
+
+	# check if tables exist
+	exist1 = utils.check_tables_exist(cnx, "item")
+	exist2 = utils.check_tables_exist(cnx, "category")
+	if exist1 and exist2:
+		pass
+	else:
+		utils.guineapig_print("Tables do not exist.")
+		utils.guineapig_print("Please run `guineapig setupdb`.")
+		sys.exit()
+
+	cursor.close()
+	cnx.close()
+	gui_tkinter.get_all()
+	
 
 
 
