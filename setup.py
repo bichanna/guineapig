@@ -23,6 +23,8 @@ setup(
             "mysql-connector-python",
             "protobuf",
             "six",
+            "wcwidth",
+            "prettytable",
         ], 
 		license="MIT",
         keywords=["guineapig", "python"],
